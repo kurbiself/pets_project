@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>{{title}}</title>
+  </head>
+  <body bgcolor="1f1e1e", style="background-image: url('https://papik.pro/uploads/posts/2022-01/1641274926_54-papik-pro-p-oblaka-vektornii-risunok-54.png')">
+    <h1 style="color: #71aaf0; font-family: Comic Sans MS; text-align: center">
+      {{title}}
+    </h1>
+    <dl style="
+        color: #d2e4fa;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: left;
+        font-size: 25px"
+    >
+        {% for item in data %}
+        <li>
+            {{item}}
+        </li>
+        {% endfor %}
+    </dl>
+      <img
+        src="https://avatars.dzeninfra.ru/get-zen_doc/4759087/pub_635baee03664721b07e3840d_635baf3b86c2e6089924affd/scale_1200"
+        width="420"
+        height="400"
+        hspace="500px"
+      />
+    </p>
+  </body>
+</html>
