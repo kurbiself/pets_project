@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import PetsTypes, Breeds, PetsOwners, Pets
 from django.http import HttpResponse
+from django import forms
+from .forms import PetsFilter
 
 # Create your views here.
 
@@ -32,12 +34,28 @@ def pets_owners(request):
 
 def pets(request, pk =None):
     template_name = 'pets_list/pets.html'
+    form = PetsFilter(request.GET or None)
+    context = {'form': form}
     if request.method == 'GET':
-        if pk == None:
-            tmp = Pets.objects.all().order_by('name') 
+        if form.is_valid() and (form.cleaned_data['pet_name'] != '' or 
+                                form.cleaned_data['owner_name'] != '' or
+                                form.cleaned_data['birthday'] is not None):
+            tmp = Pets.objects
+            if form.cleaned_data['pet_name']:
+                tmp = tmp.filter(name__icontains = form.cleaned_data['pet_name'])
+                #items = list(tmp)
+            if form.cleaned_data['birthday']:
+                tmp = tmp.filter(year_of_birth = form.cleaned_data['birthday'])
+                #items = list(tmp)
+            if form.cleaned_data['owner_name']:
+                tmp = tmp.filter(owner__name__icontains = form.cleaned_data['owner_name'])
+            items = list(tmp)
+        elif pk == None:  
+            tmp = Pets.objects.all().order_by('name')
             items = list(tmp)
         else:
             tmp = Pets.objects.get(id=pk)
             items = [tmp]
-    context = {'title': 'Питомцы','data': items}
+            
+    context.update({'title': 'Питомцы','data': items})
     return render(request, template_name, context)  
