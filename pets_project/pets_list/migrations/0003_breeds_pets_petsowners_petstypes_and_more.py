@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
                 ('sex', models.BooleanField()),
-                ('year_of_birth', models.DateField(null=True)),
+                ('birth', models.DateField(null=True)),
                 ('color', models.CharField(max_length=64)),
                 ('note', models.TextField(blank=True, null=True)),
                 ('breed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pets_list.breeds')),
