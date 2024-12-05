@@ -10,7 +10,67 @@ from .serializers import (
     PetsSerializer,
 )
 from rest_framework.parsers import JSONParser
+from rest_framework import generics, viewsets
 from django.views.decorators.csrf import csrf_exempt
+
+
+class PetsTypesViewsSet(viewsets.ModelViewSet):
+    serializer_class = PetsTypesSerializer
+
+    def get_queryset(self):
+        name_filter = self.request.query_params.get("name")
+        if name_filter:
+            return PetsTypes.objects.filter(name__icontains=name_filter)
+        else:
+            return PetsTypes.objects.all()
+
+
+class BreedsViewsSet(viewsets.ModelViewSet):
+    serializer_class = BreedsSerializer
+
+    def get_queryset(self):
+        data = self.request.data
+        t = data.get("type")
+        if t:
+            return Breeds.objects.filter(type=t)
+        else:
+            return Breeds.objects.all()
+
+
+class PetsTypesList(generics.ListAPIView):
+    serializer_class = PetsTypesSerializer
+
+    def get_queryset(self):
+        name_filter = self.request.query_params.get("name")
+        if name_filter:
+            return PetsTypes.objects.filter(name__icontains=name_filter)
+        else:
+            return PetsTypes.objects.all()
+
+
+class PetsTypesMixin:
+    queryset = PetsTypes.objects.all().order_by("name")
+    serializer_class = PetsTypesSerializer
+
+
+class PetsTypesListView(PetsTypesMixin, generics.ListAPIView):
+    pass
+
+
+class PetsTypesCreateView(PetsTypesMixin, generics.CreateAPIView):
+    pass
+
+
+class PetsTypesUpdateView(PetsTypesMixin, generics.UpdateAPIView):
+    pass
+
+
+class PetsTypesDestroyView(PetsTypesMixin, generics.DestroyAPIView):
+    pass
+
+
+class PetsTypesRetrieveView(PetsTypesMixin, generics.RetrieveAPIView):
+    pass
 
 
 # Create your views here.
