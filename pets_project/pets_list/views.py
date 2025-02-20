@@ -9,13 +9,16 @@ from .serializers import (
     BreedsSerializer,
     PetsSerializer,
 )
+from .permissions import NotBobPermission
 from rest_framework.parsers import JSONParser
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, permissions
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 
 class PetsTypesViewsSet(viewsets.ModelViewSet):
     serializer_class = PetsTypesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         name_filter = self.request.query_params.get("name")
@@ -27,14 +30,61 @@ class PetsTypesViewsSet(viewsets.ModelViewSet):
 
 class BreedsViewsSet(viewsets.ModelViewSet):
     serializer_class = BreedsSerializer
+    permission_classes = (NotBobPermission,)
 
     def get_queryset(self):
         data = self.request.data
         t = data.get("type")
         if t:
-            return Breeds.objects.filter(type=t)
+            return Breeds.objects.filter(type=t)  # через
         else:
             return Breeds.objects.all()
+
+
+class OwnersViewsSet(viewsets.ModelViewSet):
+    serializer_class = PetsOwnersSerializer
+
+    def get_queryset(self):
+        name_filter = self.request.query_params.get("name")
+
+        if name_filter:
+            return PetsOwners.objects.filter(name__icontains=name_filter)
+        else:
+            return PetsOwners.objects.all().order_by("name")
+
+
+class PetsViewsSet(viewsets.ModelViewSet):
+    serializer_class = PetsSerializer
+
+    def get_queryset(self):
+        name_filter = self.request.query_params.get("name")
+        breed_filter = self.request.query_params.get("breed")
+        breed_name_filter = self.request.query_params.get("breed_name")
+        color_filter = self.request.query_params.get("color")
+        owner_filter = self.request.query_params.get("owner")
+        owner_name_filter = self.request.query_params.get("owner_name")
+        sex_filter = self.request.query_params.get("sex")
+
+        pet = Pets.objects.all()
+
+        if name_filter:
+            pet = pet.filter(name__icontains=name_filter)
+        if breed_filter:
+            pet = pet.filter(breed=breed_filter)
+        if breed_name_filter:
+            pet = pet.filter(breed__name__icontains=breed_name_filter)
+        if color_filter:
+            pet = pet.filter(color__icontains=color_filter)
+        if owner_filter:
+            pet = pet.filter(owner=owner_filter)
+        if owner_name_filter:
+            pet = pet.filter(owner__name__icontains=owner_name_filter)
+        if sex_filter:
+            pet = pet.filter(sex=sex_filter)
+        return pet
+
+
+# ---------------------------------------------------------------------------------------------
 
 
 class PetsTypesList(generics.ListAPIView):
