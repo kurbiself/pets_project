@@ -18,7 +18,7 @@ from django.db.models import Q
 
 class PetsTypesViewsSet(viewsets.ModelViewSet):
     serializer_class = PetsTypesSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
         name_filter = self.request.query_params.get("name")
@@ -30,11 +30,11 @@ class PetsTypesViewsSet(viewsets.ModelViewSet):
 
 class BreedsViewsSet(viewsets.ModelViewSet):
     serializer_class = BreedsSerializer
-    permission_classes = (NotBobPermission,)
+    #permission_classes = (NotBobPermission,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
-        data = self.request.data
-        t = data.get("type")
+        t = self.request.query_params.get("type")
         if t:
             return Breeds.objects.filter(type=t)  # через
         else:
@@ -43,6 +43,7 @@ class BreedsViewsSet(viewsets.ModelViewSet):
 
 class OwnersViewsSet(viewsets.ModelViewSet):
     serializer_class = PetsOwnersSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         name_filter = self.request.query_params.get("name")
@@ -55,6 +56,7 @@ class OwnersViewsSet(viewsets.ModelViewSet):
 
 class PetsViewsSet(viewsets.ModelViewSet):
     serializer_class = PetsSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         name_filter = self.request.query_params.get("name")
