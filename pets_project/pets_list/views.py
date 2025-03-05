@@ -18,7 +18,7 @@ from django.db.models import Q
 
 class PetsTypesViewsSet(viewsets.ModelViewSet):
     serializer_class = PetsTypesSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         name_filter = self.request.query_params.get("name")
